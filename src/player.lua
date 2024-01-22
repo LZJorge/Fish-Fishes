@@ -1,5 +1,6 @@
 local player = {}
 
+-- Iniciar características del jugador
 function player.init()
     -- Tamaño del 'personaje'
     player.size = 20
@@ -11,15 +12,15 @@ function player.init()
     -- Velocidad del personaje
     player.speedX = 200
     player.speedY = 200
-
     player.topSpeed = 800
     player.gravity = 20
 
+    -- Tamaño de area de colisión del personaje
     player.hitbox = player.size + 5
 end
 
+-- Dibujar jugador en pantalla
 function player.draw()
-    -- Dibujar jugador en pantalla
     love.graphics.setColor(255, 255, 255)
     love.graphics.rectangle(
         'fill',

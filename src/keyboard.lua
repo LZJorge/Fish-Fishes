@@ -1,3 +1,5 @@
+local game = require('src.game')
+
 local keyboard = {}
 
 function ResetSpeed(player)
@@ -19,6 +21,7 @@ local function adjustSpeed(player, dt, CanMove)
     end
 end
 
+-- Acciones para mover al jugador
 function keyboard.move(player, dt, canMove)
     -- Movimiento horizontal
     if(love.keyboard.isDown('left')) then
@@ -42,6 +45,19 @@ function keyboard.move(player, dt, canMove)
         if(love.keyboard.isDown('down')) then
             player.y = player.y + player.speedY * dt
             adjustSpeed(player, dt, canMove)
+        end
+    end
+end
+
+-- Acciones para activar o desactivar la pausa del juego
+function keyboard.helpers(state)
+    function love.keypressed(key)
+        if key == 'escape' then
+            if state.playing then
+                game.pause()
+            elseif state.paused then
+                game.play()
+            end
         end
     end
 end
