@@ -1,13 +1,21 @@
 local game = require('src.game')
 local bounds = require('src.bounds')
-local player = require('src.player')
+local Player = require('src.player')
 local keyboard = require('src.keyboard')
-local bird = require('src.bird')
+local Bird = require('src.bird')
+
+local bird = {}
+local player = {}
 
 function love.load()
-    player.init()
-    bird.init()
+    player = Player:new()
+
     game.init()
+
+    -- Cantidad de aves: 3
+    for i = 1, 3 do
+        bird[i] = Bird:new()
+    end
 end
 
 function love.update(dt)
@@ -22,15 +30,17 @@ function love.update(dt)
         -- Checar colisiones con el borde de la pantalla
         bounds.checkScreen(player, love.graphics.getWidth(), love.graphics.getHeight())
 
-        -- Checar colisiones con las aves
-        local birdCollision = bounds.checkCollision(player, bird)
-        if birdCollision then
-            game.updateScore()
-            bird.regenerate()
-        end
+        for i = 1, #bird do
+            -- Checar colisiones con las aves
+            local birdCollision = bounds.checkCollision(player, bird[i])
+            if birdCollision then
+                game.updateScore()
+                bird[i]:regenerate()
+            end
 
-        -- Iniciar movimiento de las aves
-        bird.move(dt)
+            -- Iniciar movimiento de las aves
+            bird[i]:move(dt)
+        end
     end
 end
 
@@ -46,8 +56,10 @@ function love.draw()
     game.drawScore()
 
     -- Dibujar entidades
-    player.draw()
-    bird.draw()
+    player:draw()
+    for i = 1, #bird do
+        bird[i]:draw()
+    end
 
     -- Dibujar PAUSA en caso de estar pausado el juego
     if game.state.paused then

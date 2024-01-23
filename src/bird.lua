@@ -1,51 +1,56 @@
-local bird = {}
-local direction = 1
+local Bird = {}
 
--- Iniciar características del ave
-function bird.init()
+function Bird:new()
+    local obj = setmetatable({}, { __index = Bird })
     -- Tamaño del ave
-    bird.size = 10
+    obj.size = 10
 
     -- Velocidad del ave (aleatoria entre 200 y 400)
-    bird.speed = math.random(200, 400)
+    obj.speed = math.random(200, 400)
+
+    -- Dirección del ave
+    obj.direction = 1
 
     -- Tamaño de área de colision del ave
-    bird.hitbox = bird.size + 5
+    obj.hitbox = obj.size + 5
 
     -- Posicion del ave (aleatoria en el eje Y) 
-    bird.y = math.random(bird.size, love.graphics.getHeight() / 2 - bird.size)
-    bird.x = bird.size -- Inicia en el lado izquiero
+    obj.y = math.random(obj.size, love.graphics.getHeight() / 2 - obj.size)
+    obj.x = obj.size -- Inicia en el lado izquierdo
+
+    return obj
 end
 
--- Dibujar ave
-function bird.draw()
+function Bird:draw()
     love.graphics.setColor(0, 0, 1) -- Aplicar colores
-    love.graphics.circle('fill', bird.x, bird.y, bird.size, bird.size * 2)
+    love.graphics.circle('fill', self.x, self.y, self.size, self.size * 2)
     love.graphics.setColor(255, 255, 255) -- Reiniciar colores
 end
 
--- Regenerar ave una vez colisionada con el jugador
-function bird.regenerate()
-    bird.init()    
+function Bird:regenerate()
+    self.speed = math.random(200, 400)
+    self.y = math.random(self.size, love.graphics.getHeight() / 2 - self.size)
+
     local side = math.random()
 
     if side < 0.5 then
-        bird.x = bird.size
-        direction = 1
+        self.x = self.size
+        self.direction = 1
     else
-        bird.x = love.graphics.getWidth() - bird.size
-        direction = -1
+        self.x = love.graphics.getWidth() - self.size
+        self.direction = -1
     end
 end
 
 -- Iniciar el movimiento del ave
-function bird.move(dt)   
-    bird.x = bird.x + bird.speed * direction * dt
+function Bird:move(dt)   
+    self.x = self.x + self.speed * self.direction * dt
 
     -- Cambiar el sentido del movimiento si choca con el borde de la pantalla
-    if bird.x < bird.size or bird.x > love.graphics.getWidth() - bird.size then
-        direction = -direction
+    if self.x < self.size or self.x > love.graphics.getWidth() - self.size then
+        -- self.direction = -self.
+        self:regenerate()
     end
 end
 
-return bird
+return Bird

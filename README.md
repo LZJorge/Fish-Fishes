@@ -15,7 +15,7 @@
 
 
 ## Información General
-Es un pequeño proyecto de un videojuego realizado por un grupo de estudiante de la Universidad Nacional Experimental "Rómulo Gallegos" para la materia <_Electiva 5_>
+Es un pequeño proyecto de un videojuego realizado por un grupo de estudiante de la Universidad Nacional Experimental "Rómulo Gallegos" para la materia _Electiva 5_
 
 #### Integrantes:
 - Jorge Landaeta - V.30.327.281 - [@LZJorge](https://github.com/LZJorge)
@@ -49,4 +49,4 @@ love Fish-Fishes
 
 
 ## Estado del Proyecto
-El proyecto se encuentra en: [_en progreso_]
+El proyecto se encuentra: [_en progreso_]
