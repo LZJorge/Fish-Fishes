@@ -1,68 +1,41 @@
-local game = require('src.game')
-local bounds = require('src.bounds')
-local Player = require('src.player')
-local keyboard = require('src.keyboard')
-local Bird = require('src.bird')
+local keyboard = require 'src.keyboard'
+local Player = require 'src.entities.player'
+local Bird = require 'src.entities.bird'
+local world = require 'src.world'
+local timer = require 'libs.hump.timer'
 
-local bird = {}
-local player = {}
+local player
+local birds
 
 function love.load()
-    player = Player:new()
+    -- Inicia el mundo de la libreria 'Windfield'
+    world.init()
+    
+    -- Inicia nuevca instancia del jugador
+    player = Player:new(world)
 
-    game.init()
-
-    -- Cantidad de aves: 3
-    for i = 1, 3 do
-        bird[i] = Bird:new()
+    -- Inicia una cantidad x de aves
+    local birdsNumber = 4
+    for i = 1, birdsNumber do
+        birds[i] = Bird:new(world)
     end
 end
 
 function love.update(dt)
-    -- Acciones que pueden ocurrir mientras el juego está en pausa
-    keyboard.helpers(game.state)
+    world:update(dt)
+    timer.update(dt)
 
-    -- Acciones que pueden ocurrir mientras el juego NO está en pausa
-    if game.state.playing then
-        -- Mover jugador
-        keyboard.move(player, dt, CanMove)
+    player:update(world)
 
-        -- Checar colisiones con el borde de la pantalla
-        bounds.checkScreen(player, love.graphics.getWidth(), love.graphics.getHeight())
-
-        for i = 1, #bird do
-            -- Checar colisiones con las aves
-            local birdCollision = bounds.checkCollision(player, bird[i])
-            if birdCollision then
-                game.updateScore()
-                bird[i]:regenerate()
-            end
-
-            -- Iniciar movimiento de las aves
-            bird[i]:move(dt)
-        end
+    for i = 1, #birds do
+        birds[i]:move()
     end
+
+    -- Controles del jugador
+    keyboard.movement(player)
 end
 
 function love.draw()
-    -- Dibujar línea de separacion entre agua y cielo en el medio de la pantalla
-    love.graphics.line(0,
-        love.graphics.getHeight() / 2,
-        love.graphics.getWidth(),
-        love.graphics.getHeight() / 2
-    )
-
-    -- Dibujar puntuación
-    game.drawScore()
-
-    -- Dibujar entidades
-    player:draw()
-    for i = 1, #bird do
-        bird[i]:draw()
-    end
-
-    -- Dibujar PAUSA en caso de estar pausado el juego
-    if game.state.paused then
-        love.graphics.print('PAUSA', love.graphics.getWidth() / 2 - 25, 50)
-    end
+    -- Dibujar colliders de las entidades
+    world:draw()
 end

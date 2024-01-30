@@ -1,50 +1,28 @@
 local game = require('src.game')
-
 local keyboard = {}
 
-function ResetSpeed(player)
-    player.speedX = 200
-    player.speedY = 200
-end
-
--- Mientras el personaje se pueda mover (dentro del agua) su velocidad va aumentando
-local function adjustSpeed(player, dt, CanMove)
-    if CanMove then
-        if player.speedY < 200 then
-            ResetSpeed(player)
-        end
-
-        if player.speedY <= player.topSpeed then
-            player.speedX = player.speedX + dt * 300
-            player.speedY = player.speedY + dt * 300
-        end
-    end
-end
-
 -- Acciones para mover al jugador
-function keyboard.move(player, dt, canMove)
-    -- Movimiento horizontal
-    if(love.keyboard.isDown('left')) then
-        player.x = player.x - player.speedX * dt
-        adjustSpeed(player, dt, canMove)
-    end
+function keyboard.movement(player)
+    local vx, vy = player.collider:getLinearVelocity()
 
-    if(love.keyboard.isDown('right')) then
-        player.x = player.x + player.speedX * dt
-        adjustSpeed(player, dt, canMove)
-
-    end
-
-    if canMove then
-        -- Movimiento vertical
-        if(love.keyboard.isDown('up')) then
-            player.y = player.y - player.speedY * dt
-            adjustSpeed(player, dt, canMove)
+    -- Solo puede moverse si está en el agua
+    if player.isInWater then
+        -- Movimiento horizontal
+        if(love.keyboard.isDown('left')) and vx > -(player.topSpeed - 100) then
+            player.collider:applyForce(-player.speed, 0)
         end
 
-        if(love.keyboard.isDown('down')) then
-            player.y = player.y + player.speedY * dt
-            adjustSpeed(player, dt, canMove)
+        if(love.keyboard.isDown('right')) and vx < player.topSpeed - 100 then
+            player.collider:applyForce(player.speed, 0)
+        end
+    
+        -- Movimiento vertical
+        if(love.keyboard.isDown('up')) and vy > -player.topSpeed then
+            player.collider:applyForce(0, -player.speed)
+        end
+
+        if(love.keyboard.isDown('down')) and vy < player.topSpeed then
+            player.collider:applyForce(0, player.speed)
         end
     end
 end
