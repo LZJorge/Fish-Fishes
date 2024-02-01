@@ -21,6 +21,12 @@ function game.drawScore()
     love.graphics.print('Puntuación: ' ..game.score, 30, 30)
 end
 
+-- Dibujar pausa
+function game.drawPause()
+    love.graphics.setColor(255, 255, 255)
+    love.graphics.print('Juego pausado', love.graphics.getWidth() / 2 - 50, love.graphics.getHeight() / 2 - 50)
+end
+
 -- Pausar juego
 function game.pause()
     game.state = {

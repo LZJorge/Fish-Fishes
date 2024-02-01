@@ -26,22 +26,39 @@ function love.load()
 end
 
 function love.update(dt)
-    world:update(dt)
-    timer.update(dt)
+    -- Controles de ayuda
+    keyboard.helpers(game.state)
 
-    player:update(world)
+    -- Acciones que pueden ocurrir mientras el juego no está en pausa
+    if(game.state.playing) then
+        -- Actualizar mundo de windfield
+        world:update(dt)
 
-    for i = 1, #birds do
-        birds[i]:move()
+        -- Actualizar reloj de la librería Hump
+        timer.update(dt)
+
+        -- Calcular colisiones del jugador con las diferentes entidades
+        player:update(world)
+
+        -- Mover aves
+        for i = 1, #birds do
+            birds[i]:move()
+        end
+
+        -- Controles del jugador
+        keyboard.movement(player)
     end
-
-    -- Controles del jugador
-    keyboard.movement(player)
 end
 
 function love.draw()
     -- Dibujar colliders de las entidades
     world:draw()
 
+    -- Dibujar puntuación
     game.drawScore()
+
+    -- Dibujar Pausa si el juego se encuentra pausado
+    if game.state.paused then
+        game.drawPause()
+    end
 end
