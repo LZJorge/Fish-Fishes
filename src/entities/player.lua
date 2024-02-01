@@ -1,4 +1,5 @@
 require 'src.layers'
+local game = require 'src.game'
 local Player = {}
 
 -- Iniciar características del jugador
@@ -38,7 +39,7 @@ function Player:update(world)
     if self.collider:enter(Layers.BIRD) then
         local collision_data = self.collider:getEnterCollisionData(Layers.BIRD)
         local bird = collision_data.collider:getObject()
-
+        game.updateScore()
         bird:reset()
     end
 end

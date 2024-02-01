@@ -1,3 +1,4 @@
+local game = require 'src.game'
 local keyboard = require 'src.keyboard'
 local Player = require 'src.entities.player'
 local Bird = require 'src.entities.bird'
@@ -10,6 +11,9 @@ local birds = {}
 function love.load()
     -- Inicia el mundo de la libreria 'Windfield'
     world.init()
+
+    -- Inicia características del juego
+    game.init()
     
     -- Inicia nuevca instancia del jugador
     player = Player:new(world)
@@ -38,4 +42,6 @@ end
 function love.draw()
     -- Dibujar colliders de las entidades
     world:draw()
+
+    game.drawScore()
 end
