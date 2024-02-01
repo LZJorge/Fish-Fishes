@@ -1,12 +1,16 @@
 local game = require 'src.game'
 local keyboard = require 'src.keyboard'
+
 local Player = require 'src.entities.player'
 local Bird = require 'src.entities.bird'
+local Plane = require 'src.entities.plane'
+
 local world = require 'src.world'
 local timer = require 'libs.hump.timer'
 
 local player = {}
 local birds = {}
+local planes = {}
 
 function love.load()
     -- Inicia el mundo de la libreria 'Windfield'
@@ -22,6 +26,12 @@ function love.load()
     local birdsNumber = 4
     for i = 1, birdsNumber do
         birds[i] = Bird:new(world)
+    end
+
+    -- Inicia una cantidad x de aviones
+    local planesNumber = 1
+    for i = 1, planesNumber do
+        planes[i] = Plane:new(world)
     end
 end
 
@@ -45,6 +55,11 @@ function love.update(dt)
             birds[i]:move()
         end
 
+        -- Mover aves
+        for i = 1, #planes do
+            planes[i]:move()
+        end
+
         -- Controles del jugador
         keyboard.movement(player)
     end
@@ -60,5 +75,10 @@ function love.draw()
     -- Dibujar Pausa si el juego se encuentra pausado
     if game.state.paused then
         game.drawPause()
+    end
+
+    -- Dibujar Perdiste si haz chocado contra un enemigo
+    if game.state.ended then
+        game.drawGameOver()
     end
 end

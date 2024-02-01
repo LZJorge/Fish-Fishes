@@ -42,6 +42,10 @@ function Player:update(world)
         game.updateScore()
         bird:reset()
     end
+
+    if self.collider:enter(Layers.PLANE) then
+        game.finish()
+    end
 end
 
 return Player

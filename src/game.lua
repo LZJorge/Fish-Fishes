@@ -27,6 +27,12 @@ function game.drawPause()
     love.graphics.print('Juego pausado', love.graphics.getWidth() / 2 - 50, love.graphics.getHeight() / 2 - 50)
 end
 
+-- Dibujar pausa
+function game.drawGameOver()
+    love.graphics.setColor(255, 255, 255)
+    love.graphics.print('Perdiste! =(', love.graphics.getWidth() / 2 - 45, love.graphics.getHeight() / 2 - 45)
+end
+
 -- Pausar juego
 function game.pause()
     game.state = {
