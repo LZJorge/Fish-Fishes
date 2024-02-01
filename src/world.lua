@@ -6,9 +6,9 @@ local world = wf.newWorld(0, 512)
 function world.init()
     world:addCollisionClass(Layers.AIR)
     world:addCollisionClass(Layers.WATER, { ignores = { Layers.WATER } })
-    world:addCollisionClass('Top')
-    world:addCollisionClass('Wall')
-    world:addCollisionClass(Layers.PLAYER, { ignores = { Layers.WATER, Layers.AIR, 'Top' } })
+    world:addCollisionClass(Layers.TOPWALL)
+    world:addCollisionClass(Layers.WALL)
+    world:addCollisionClass(Layers.PLAYER, { ignores = { Layers.WATER, Layers.AIR, Layers.TOPWALL } })
     world:addCollisionClass(Layers.BIRD, { ignores = { Layers.AIR, Layers.BIRD, Layers.PLAYER } })
     world:addCollisionClass(Layers.ENEMY, { ignores = { Layers.AIR } })
 
@@ -34,7 +34,7 @@ function world.init()
 
     for i = 1, #solids do
         solids[i]:setType('static')
-        solids[i]:setCollisionClass('Wall')
+        solids[i]:setCollisionClass(Layers.WALL)
     end
 end
 

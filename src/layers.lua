@@ -4,5 +4,6 @@ Layers = {
     BIRD = 'Bird',
     WATER = 'Water',
     AIR = 'Air',
-    TopWall = 'Top'
+    WALL = 'Wall',
+    TOPWALL = 'Top'
 }

@@ -4,8 +4,8 @@ local Bird = require 'src.entities.bird'
 local world = require 'src.world'
 local timer = require 'libs.hump.timer'
 
-local player
-local birds
+local player = {}
+local birds = {}
 
 function love.load()
     -- Inicia el mundo de la libreria 'Windfield'
