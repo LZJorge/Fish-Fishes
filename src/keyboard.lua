@@ -1,4 +1,4 @@
-local game = require('src.game')
+local game = require 'src.game'
 local keyboard = {}
 
 -- Acciones para mover al jugador
@@ -36,6 +36,16 @@ function keyboard.helpers(state)
             elseif state.paused then
                 game.play()
             end
+        end
+    end
+end
+
+-- Acciones para activar o desactivar la pausa del juego
+function keyboard.restart(entities)
+    function love.keypressed(key)
+        if key == 'r' then
+            game.null()
+            game.restart(entities)
         end
     end
 end

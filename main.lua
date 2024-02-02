@@ -1,54 +1,59 @@
+local timer = require 'libs.hump.timer'
+
 local game = require 'src.game'
 local keyboard = require 'src.keyboard'
+local world = require 'src.world'
 
 local Player = require 'src.entities.player'
 local Bird = require 'src.entities.bird'
 local Plane = require 'src.entities.plane'
 
-local world = require 'src.world'
-local timer = require 'libs.hump.timer'
-
 local player = {}
 local birds = {}
 local planes = {}
 
-function love.load()
-    -- Inicia el mundo de la libreria 'Windfield'
-    world.init()
+local entities = { player, birds, planes }
 
+function love.load()
     -- Inicia características del juego
     game.init()
+
+    -- Inicia el mundo de la libreria 'Windfield'
+    if game.round == 0 then
+        world.init()
+    end
     
     -- Inicia nuevca instancia del jugador
-    player = Player:new(world)
+    player[1] = Player:new(world)
 
     -- Inicia una cantidad x de aves
-    local birdsNumber = 4
+    local birdsNumber = 5
     for i = 1, birdsNumber do
         birds[i] = Bird:new(world)
     end
 
     -- Inicia una cantidad x de aviones
-    local planesNumber = 1
+    local planesNumber = 2
     for i = 1, planesNumber do
         planes[i] = Plane:new(world)
     end
 end
 
 function love.update(dt)
+    -- Actualizar reloj de la librería Hump
+    timer.update(dt)
+
+    -- Acciones que pueden ocurrir mientras el juego está en pausa
     -- Controles de ayuda
     keyboard.helpers(game.state)
 
-    -- Acciones que pueden ocurrir mientras el juego no está en pausa
-    if(game.state.playing) then
+    -- Acciones que pueden ocurrir mientras el juego no está transcurriendo
+    if game.state.playing then
         -- Actualizar mundo de windfield
         world:update(dt)
 
-        -- Actualizar reloj de la librería Hump
-        timer.update(dt)
-
         -- Calcular colisiones del jugador con las diferentes entidades
-        player:update(world)
+        player[1]:update(world)
 
         -- Mover aves
         for i = 1, #birds do
@@ -61,7 +66,12 @@ function love.update(dt)
         end
 
         -- Controles del jugador
-        keyboard.movement(player)
+        keyboard.movement(player[1])
+    end
+
+    -- Acciones que pueden ocurrir mientras el juego está terminado
+    if game.state.ended then
+        keyboard.restart(entities)
     end
 end
 

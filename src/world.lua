@@ -10,7 +10,7 @@ function world.init()
     world:addCollisionClass(Layers.WALL)
     world:addCollisionClass(Layers.PLAYER, { ignores = { Layers.WATER, Layers.AIR, Layers.TOPWALL } })
     world:addCollisionClass(Layers.BIRD, { ignores = { Layers.AIR, Layers.BIRD, Layers.PLAYER } })
-    world:addCollisionClass(Layers.PLANE, { ignores = { Layers.AIR, Layers.BIRD, Layers.PLAYER, Layers.WALL } })
+    world:addCollisionClass(Layers.PLANE, { ignores = { Layers.AIR, Layers.BIRD, Layers.PLAYER, Layers.WALL, Layers.PLANE } })
 
     --
     Air = world:newRectangleCollider(-100, -2000, love.graphics.getWidth() + 100, love.graphics.getHeight() / 2 + 2000 + 50 - 1)
