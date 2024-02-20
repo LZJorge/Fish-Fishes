@@ -1,10 +1,11 @@
 local timer = require 'libs.hump.timer'
 local game = {}
+
 game.round = 0
+game.highScore = 0
 
 -- Iniciar características de la partida
 function game.init()
-    game.highScore = 0
     game.score = 0
     game.state = {
         playing = true,
@@ -15,7 +16,7 @@ function game.init()
 end
 
 function game.restart(entities)
-    game.null()
+    game.loading()
 
     timer.after(3, function ()
         for i = 1, #entities do

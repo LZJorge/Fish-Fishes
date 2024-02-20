@@ -44,7 +44,6 @@ end
 function keyboard.restart(entities)
     function love.keypressed(key)
         if key == 'r' then
-            game.null()
             game.restart(entities)
         end
     end
