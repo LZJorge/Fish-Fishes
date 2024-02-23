@@ -10,10 +10,12 @@ function keyboard.movement(player)
         -- Movimiento horizontal
         if(love.keyboard.isDown('left')) and vx > -(player.topSpeed - 100) then
             player.collider:applyForce(-player.speed, 0)
+            player.sprite = love.graphics.newImage('assets/entities/player/playerLeft.png')
         end
 
         if(love.keyboard.isDown('right')) and vx < player.topSpeed - 100 then
             player.collider:applyForce(player.speed, 0)
+            player.sprite = love.graphics.newImage('assets/entities/player/player.png')
         end
     
         -- Movimiento vertical

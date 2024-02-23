@@ -15,6 +15,7 @@ function game.init()
     }
 end
 
+-- Reiniciar juego
 function game.restart(entities)
     game.loading()
 
@@ -50,13 +51,24 @@ function game.drawPause()
     love.graphics.print('Juego pausado', love.graphics.getWidth() / 2 - 50, love.graphics.getHeight() / 2 - 50)
 end
 
+-- Dibujar línea de separación entre agua y aire
+function game.drawLine()
+    -- ligth blue transparent
+    love.graphics.setColor(100, 100, 155)
+    
+    -- Toda la mitad inferior de la pantalla debe ser agua
+    love.graphics.line(0, love.graphics.getHeight() / 2 + 50, love.graphics.getWidth(), love.graphics.getHeight() / 2 + 50)
+
+    love.graphics.setColor(255, 255, 255)
+end
+
 -- Dibujar pausa
 function game.drawGameOver()
     love.graphics.setColor(255, 255, 255)
-    love.graphics.print('Perdiste! =(', love.graphics.getWidth() / 2 - 40, love.graphics.getHeight() - 150 - 45)
+    love.graphics.print('Perdiste! =(', love.graphics.getWidth() / 2 - 40, love.graphics.getHeight() - 150 - 65)
     love.graphics.print('Puntuación más alta: ' ..game.highScore, love.graphics.getWidth() / 2 - 80, love.graphics.getHeight() -150 - 25)
     love.graphics.print('Tu puntuación: ' ..game.score, love.graphics.getWidth() / 2 - 60, love.graphics.getHeight() - 150 - 5)
-    love.graphics.print('Presiona la tecla R para reiniciar', love.graphics.getWidth() / 2 - 105, love.graphics.getHeight() - 150 + 25)
+    love.graphics.print('Presiona la tecla R para reiniciar', love.graphics.getWidth() / 2 - 115, love.graphics.getHeight() - 150 + 35)
 end
 
 -- Pausar juego

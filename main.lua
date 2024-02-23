@@ -15,6 +15,8 @@ local planes = {}
 local entities = { player, birds, planes }
 
 function love.load()
+    love.graphics.setDefaultFilter('nearest', 'nearest')
+
     -- Inicia características del juego
     game.init()
 
@@ -60,9 +62,9 @@ function love.update(dt)
             birds[i]:move()
         end
 
-        -- Mover aves
+        -- Mover aviones
         for i = 1, #planes do
-            planes[i]:move()
+            planes[i]:move(dt)
         end
 
         -- Controles del jugador
@@ -77,7 +79,18 @@ end
 
 function love.draw()
     -- Dibujar colliders de las entidades
-    world:draw()
+    --world:draw()
+    game.drawLine()
+
+    -- Dibujar fuente
+    love.graphics.setNewFont('assets/font/font.ttf', 14)
+
+    -- Dibujar entidades
+    for i = 1, #entities do
+        for j = 1, #entities[i] do
+            entities[i][j]:draw()
+        end
+    end
 
     -- Dibujar puntuación
     game.drawScore()

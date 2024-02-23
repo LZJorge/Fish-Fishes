@@ -16,6 +16,10 @@ function Player:new(world)
     self.topSpeed = 1024
     self.isInWater = true
 
+    -- Textura
+    self.sprite = love.graphics.newImage('assets/entities/player/player.png')
+
+    -- Collider del jugador
     self.collider = world:newRectangleCollider(self.x, self.y, 20, 20)
     self.collider:setRestitution(0.2)
     self.collider:setCollisionClass(Layers.PLAYER)
@@ -29,6 +33,9 @@ function Player:update(world)
         self.isInWater = false
         world:setGravity(0, 1024)
     end
+
+    self.x = self.collider:getX()
+    self.y = self.collider:getY()
 
     if self.collider:enter(Layers.WATER) then
         self.isInWater = true
@@ -46,6 +53,20 @@ function Player:update(world)
     if self.collider:enter(Layers.PLANE) then
         game.finish()
     end
+end
+
+-- Dibujar jugador
+function Player:draw()
+    love.graphics.draw(
+        self.sprite, 
+        self.x, 
+        self.y, 
+        0, 
+        1.2, 
+        1.2, 
+        self.sprite:getWidth() / 2,
+        self.sprite:getHeight() / 2
+    )
 end
 
 return Player

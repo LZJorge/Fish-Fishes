@@ -1,6 +1,6 @@
 require 'src.layers'
 local timer = require 'libs.hump.timer'
-local game = require 'src.game'
+local anim8 = require 'libs.anim8.anim8'
 local Plane = {}
 local getRandomSide = require 'src.utils.getEntityRandomSide'
 
@@ -22,7 +22,7 @@ function Plane:new(world)
     obj.world = world
     
     -- Tamaño del 'personaje'
-    obj.size = 20
+    obj.size = 25
 
     -- El personaje empieza en el centro horizontalmente y a 1/4 verticalmente
     obj.x = getRandomSide(obj.size)
@@ -33,7 +33,11 @@ function Plane:new(world)
     obj.speed = math.random(10, 20)
     obj.topSpeed = math.random(180, 300)
 
-    obj.collider = obj.world:newBSGRectangleCollider(obj.x, obj.y, obj.size, obj.size, obj.size / 3)
+    -- Textura
+    obj.sprite = love.graphics.newImage('assets/entities/plane/planeRed1.png')
+
+    -- Collider
+    obj.collider = obj.world:newRectangleCollider(obj.x, obj.y, obj.size, obj.size)
     obj.collider:setCollisionClass(Layers.PLANE)
     obj.collider:setGravityScale(0)
     obj.collider:setObject(obj)
@@ -44,6 +48,9 @@ end
 -- Mover aviones en la misma dirección unicamente
 function Plane:move()
     local vx = self.collider:getLinearVelocity()
+
+    self.x = self.collider:getX()
+    self.y = self.collider:getY()
 
     if self.direction == 1 and vx <= self.topSpeed then
         self.collider:setLinearVelocity(self.topSpeed, 0)
@@ -68,13 +75,34 @@ function Plane:reset()
     end)
 end
 
--- Reaparecer aves
+-- Reaparecer aviones
 function Plane:reapear()
     self.speed = math.random(10, 15)
     self.x = getRandomSide(self.size)
     self.y = math.random(40, 280)
     self.direction = getDirection(self.x, self.size)
     self.collider:setPosition(self.x, self.y)
+end
+
+-- Dibujar aviones
+function Plane:draw()
+    -- Orientación del sprite izquierda o derecha
+    if self.direction == 1 then
+        self.sprite = love.graphics.newImage('assets/entities/plane/planeRed1.png')
+    else
+        self.sprite = love.graphics.newImage('assets/entities/plane/planeRed1Left.png')
+    end
+
+    love.graphics.draw(
+        self.sprite, 
+        self.x, 
+        self.y, 
+        0, 
+        0.4, 
+        0.4, 
+        self.sprite:getWidth() / 2,
+        self.sprite:getHeight() / 2
+    )
 end
 
 return Plane
