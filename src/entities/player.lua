@@ -1,5 +1,4 @@
 require 'src.layers'
-local game = require 'src.game'
 local Player = {}
 
 -- Iniciar características del jugador
@@ -28,7 +27,7 @@ function Player:new(world)
     return self
 end
 
-function Player:update(world)
+function Player:update(world, game)
     if self.collider:exit(Layers.WATER) then
         self.isInWater = false
         world:setGravity(0, 1024)

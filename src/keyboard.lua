@@ -43,10 +43,16 @@ function keyboard.helpers(state)
 end
 
 -- Acciones para activar o desactivar la pausa del juego
-function keyboard.restart(entities)
+function keyboard.restart(state, entities)
     function love.keypressed(key)
         if key == 'r' then
             game.restart(entities)
+        end
+
+        if key == 'escape' then
+            if state.ended then
+                game.isOnMenu()
+            end
         end
     end
 end

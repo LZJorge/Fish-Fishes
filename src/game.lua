@@ -1,18 +1,66 @@
 local timer = require 'libs.hump.timer'
+
+local world = require 'src.world'
+
+local Player = require 'src.entities.player'
+local Bird = require 'src.entities.bird'
+local Plane = require 'src.entities.plane'
+
+local player = {}
+local birds = {}
+local planes = {}
+
 local game = {}
 
 game.round = 0
 game.highScore = 0
 
--- Iniciar características de la partida
-function game.init()
-    game.score = 0
+function game.isOnMenu()
     game.state = {
-        playing = true,
+        playing = false,
         paused = false,
         ended = false,
-        loading = false
+        loading = false,
+        onMenu = true
     }
+end
+
+-- Iniciar características de la partida
+function game.init()
+    local entities = { player, birds, planes }
+    game.score = 0
+    game.play()
+
+    -- Inicia el mundo de la libreria 'Windfield'
+    if game.round == 0 then
+        world.init()
+    end
+    
+    -- Inicia nuevca instancia del jugador
+    player[1] = Player:new(world)
+
+    -- Inicia una cantidad x de aves
+    local birdsNumber = 5
+    for i = 1, birdsNumber do
+        birds[i] = Bird:new(world)
+    end
+
+    -- Inicia una cantidad x de aviones
+    local planesNumber = 2
+    for i = 1, planesNumber do
+        planes[i] = Plane:new(world)
+    end
+
+    return entities
+end
+
+-- Función para eliminar las entidades
+function game.eraseEntities(entities)
+    for i = 1, #entities do
+        for j = 1, #entities[i] do
+           entities[i][j].collider:destroy() 
+        end
+    end
 end
 
 -- Reiniciar juego
@@ -20,17 +68,9 @@ function game.restart(entities)
     game.loading()
 
     timer.after(3, function ()
-        for i = 1, #entities do
-            for j = 1, #entities[i] do
-               entities[i][j].collider:destroy() 
-            end
-        end
-    
-        game.round = game.round + 1
-        game.score = 0
-    
-        game.play()
-        love.load()
+        game.eraseEntities(entities)
+
+        game.init(world)
     end)
 end
 
@@ -77,7 +117,8 @@ function game.pause()
         playing = false,
         paused = true,
         ended = false,
-        loading = false
+        loading = false,
+        onMenu = false
     }
 end
 
@@ -87,7 +128,8 @@ function game.play()
         playing = true,
         paused = false,
         ended = false,
-        loading = false
+        loading = false,
+        onMenu = false
     }
 end
 
@@ -97,11 +139,14 @@ function game.finish()
         game.highScore = game.score
     end
 
+    game.round = game.round + 1
+
     game.state = {
         playing = false,
         paused = false,
         ended = true,
-        loading = false
+        loading = false,
+        onMenu = false
     }
 end
 
@@ -111,7 +156,8 @@ function game.loading()
         playing = false,
         paused = false,
         ended = false,
-        loading = true
+        loading = true,
+        onMenu = false
     }
 end
 
