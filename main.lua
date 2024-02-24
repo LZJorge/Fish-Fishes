@@ -62,11 +62,15 @@ function love.update(dt)
         if game.state.ended then
             keyboard.restart(game.state, world.entities)
         end
+
+        -- Volver del menu de controles
+        if game.state.onKeyboardMenu then
+            keyboard.onKeyboardMenu()
+        end
     end
 end
 
 function love.draw()
-
     -- Dibujar fuente
     local font = love.graphics.setNewFont('assets/font/font.ttf', 14)
 
@@ -76,11 +80,6 @@ function love.draw()
     end
     
     if not game.state.onMenu then
-        -- Dibujar colliders de las entidades
-        --world:draw()
-
-        game.drawLine()
-        
         -- Dibujar entidades
         if not game.state.loading then
             for i = 1, #world.entities do
@@ -91,7 +90,10 @@ function love.draw()
         end
 
         -- Dibujar puntuación
-        game.drawScore()
+        if game.state.playing or game.state.ended or game.state.paused then
+            game.drawLine()
+            game.drawScore()
+        end
 
         -- Dibujar Pausa si el juego se encuentra pausado
         if game.state.paused then
@@ -101,6 +103,10 @@ function love.draw()
         -- Dibujar Perdiste si haz chocado contra un enemigo
         if game.state.ended then
             game.drawGameOver()
+        end
+
+        if game.state.onKeyboardMenu then
+            keyboard.draw(font)
         end
     end
 end

@@ -15,16 +15,6 @@ local game = {}
 game.round = 0
 game.highScore = 0
 
-function game.isOnMenu()
-    game.state = {
-        playing = false,
-        paused = false,
-        ended = false,
-        loading = false,
-        onMenu = true
-    }
-end
-
 -- Iniciar características de la partida
 function game.init()
     local entities = { player, birds, planes }
@@ -118,7 +108,8 @@ function game.pause()
         paused = true,
         ended = false,
         loading = false,
-        onMenu = false
+        onMenu = false,
+        onKeyboardMenu = false
     }
 end
 
@@ -129,7 +120,8 @@ function game.play()
         paused = false,
         ended = false,
         loading = false,
-        onMenu = false
+        onMenu = false,
+        onKeyboardMenu = false
     }
 end
 
@@ -146,7 +138,8 @@ function game.finish()
         paused = false,
         ended = true,
         loading = false,
-        onMenu = false
+        onMenu = false,
+        onKeyboardMenu = false
     }
 end
 
@@ -157,7 +150,30 @@ function game.loading()
         paused = false,
         ended = false,
         loading = true,
-        onMenu = false
+        onMenu = false,
+        onKeyboardMenu = false
+    }
+end
+
+function game.isOnMenu()
+    game.state = {
+        playing = false,
+        paused = false,
+        ended = false,
+        loading = false,
+        onMenu = true,
+        onKeyboardMenu = false
+    }
+end
+
+function game.isOnKeyboardMenu()
+    game.state = {
+        playing = false,
+        paused = false,
+        ended = false,
+        loading = false,
+        onMenu = false,
+        onKeyboardMenu = true
     }
 end
 

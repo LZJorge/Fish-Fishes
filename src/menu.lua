@@ -20,7 +20,7 @@ function button.load()
         function()
             if game.round > 0 then
                 game.loading()
-                
+
                 timer.after(2, function ()
                     game.eraseEntities(world.entities)
                     game.play()
@@ -31,6 +31,12 @@ function button.load()
                 love.load()
             end
         end))
+    
+    table.insert(buttons, button.add('Controles', 
+        function()
+            game.isOnKeyboardMenu()
+        end
+    ))
 
     table.insert(buttons, button.add('Salir',
         function()
