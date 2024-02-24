@@ -8,60 +8,97 @@ local Plane = require 'src.entities.plane'
 
 local states = require 'src.states'
 
+local centerX = require 'src.utils.centerText'
+
 local player = {}
 local birds = {}
 local planes = {}
 
 local game = {}
-game.state = ''
+
+game.level = 1
 
 game.round = 0
-game.highScore = 0
+
+game.highScore = {}
+
+game.highScore[1] = 0
+game.highScore[2] = 0
+game.highScore[3] = 0
+
+game.birdPoints = 5
+game.birdsNumber = 4
+game.planesNumber = 2
 
 -- Iniciar características de la partida
 function game.init()
     local entities = { player, birds, planes }
     game.score = 0
-    game.play()
 
     -- Inicia el mundo de la libreria 'Windfield'
-    if game.round == 0 then
+    if game.round == 1 then
         world.init()
     end
+
+    --
+    game.updateLevelParams()
     
-    -- Inicia nuevca instancia del jugador
+    -- Inicia nueva instancia del jugador
     player[1] = Player:new(world)
 
     -- Inicia una cantidad x de aves
-    local birdsNumber = 5
-    for i = 1, birdsNumber do
+    for i = 1, game.birdsNumber do
         birds[i] = Bird:new(world)
     end
 
     -- Inicia una cantidad x de aviones
-    local planesNumber = 2
-    for i = 1, planesNumber do
+    for i = 1, game.planesNumber do
         planes[i] = Plane:new(world)
     end
+
+    entities = { player, birds, planes }
+
+    game.play()
 
     return entities
 end
 
+function game.updateLevelParams()
+    if game.level == 1 then
+        game.birdsNumber = 5
+        game.birdPoints = 5
+        game.planesNumber = 2
+    elseif game.level == 2 then
+        game.birdsNumber = 7
+        game.birdPoints = 10
+        game.planesNumber = 4
+    elseif game.level == 3 then
+        game.birdsNumber = 8
+        game.birdPoints = 15
+        game.planesNumber = 4
+    end
+end
+
 -- Función para eliminar las entidades
-function game.eraseEntities(entities)
-    for i = 1, #entities do
-        for j = 1, #entities[i] do
-           entities[i][j].collider:destroy() 
-        end
+function game.eraseEntities()
+    player[1].collider:destroy()
+
+    for i = 1, game.birdsNumber do
+        birds[i].collider:destroy()
+    end
+
+    for i = 1, game.planesNumber do
+        planes[i].collider:destroy()
     end
 end
 
 -- Reiniciar juego
-function game.restart(entities)
+function game.restart()
     game.loading()
+    game.updateRound()
 
-    timer.after(3, function ()
-        game.eraseEntities(entities)
+    timer.after(3.1, function ()
+        game.eraseEntities(world.entities)
 
         game.init(world)
     end)
@@ -69,13 +106,16 @@ end
 
 -- Actualizar puntuación
 function game.updateScore()
-    game.score = game.score + 10
+    game.score = game.score + game.birdPoints
 end
 
--- Dibujar puntuación
+----------------------------------------
+-- Dibujar
+----------------------------------------
 function game.drawScore()
     love.graphics.setColor(255, 255, 255)
     love.graphics.print('Puntuación: ' ..game.score, 30, 30)
+    love.graphics.print('Nivel: ' ..game.level, 30, 50)
 end
 
 -- Dibujar pausa
@@ -95,15 +135,26 @@ function game.drawLine()
     love.graphics.setColor(255, 255, 255)
 end
 
--- Dibujar pausa
-function game.drawGameOver()
-    love.graphics.setColor(255, 255, 255)
-    love.graphics.print('Perdiste! =(', love.graphics.getWidth() / 2 - 40, love.graphics.getHeight() - 150 - 65)
-    love.graphics.print('Puntuación más alta: ' ..game.highScore, love.graphics.getWidth() / 2 - 80, love.graphics.getHeight() -150 - 25)
-    love.graphics.print('Tu puntuación: ' ..game.score, love.graphics.getWidth() / 2 - 60, love.graphics.getHeight() - 150 - 5)
-    love.graphics.print('Presiona la tecla R para reiniciar', love.graphics.getWidth() / 2 - 115, love.graphics.getHeight() - 150 + 35)
+--
+function game.drawLoading(font)
+    love.graphics.newFont(20)
+    love.graphics.print('Cargando...', centerX('Cargando...', font), 80)
+    love.graphics.newFont(14)
 end
 
+-- Dibujar pausa
+function game.drawGameOver(font)
+    love.graphics.setColor(255, 255, 255)
+    love.graphics.print('Perdiste! =(', centerX('Perdiste! =(', font), love.graphics.getHeight() - 150 - 65)
+    love.graphics.print('Puntuación más alta: ' ..game.highScore[game.level], centerX('Puntuación más alta: ' ..game.highScore[game.level], font), love.graphics.getHeight() -150 - 25)
+    love.graphics.print('Tu puntuación: ' ..game.score, centerX('Tu puntuación: ' ..game.score, font), love.graphics.getHeight() - 150 - 5)
+    love.graphics.print('Presiona la tecla R para reiniciar', centerX('Presiona la tecla R para reiniciar', font), love.graphics.getHeight() - 150 + 35)
+    love.graphics.print('Presiona la tecla ESC para salir', centerX('Presiona la tecla ESC para salir', font), love.graphics.getHeight() - 150 + 55)
+end
+
+----------------------------------------
+-- Funciones de estado
+----------------------------------------
 -- Pausar juego
 function game.pause()
     game.state = states.PAUSED
@@ -116,13 +167,16 @@ end
 
 -- Terminar juego
 function game.finish()
-    if game.highScore < game.score then
-        game.highScore = game.score
+    if game.highScore[game.level] < game.score then
+        game.highScore[game.level] = game.score
     end
 
-    game.round = game.round + 1
-
     game.state = states.GAMEOVER
+end
+
+-- Aumentar ronda
+function game.updateRound()
+    game.round = game.round + 1
 end
 
 -- Poner juego en estado de carga (necesario para evitar bug de colliders al reiniciar)
@@ -130,12 +184,40 @@ function game.loading()
     game.state = states.LOADING
 end
 
+-- Funciones de menus
 function game.isOnMenu()
+    if game.round > 1
+        and game.state ~= states.LOADING
+        and game.state ~= states.MENU.LEVEL_SELECT
+        and game.state ~= states.MENU.KEYBOARD
+    then
+        game.eraseEntities()
+    end
     game.state = states.MENU.MAIN
 end
 
 function game.isOnKeyboardMenu()
     game.state = states.MENU.KEYBOARD
+end
+
+function game.isOnLevelsMenu()
+    game.state = states.MENU.LEVEL_SELECT
+end
+
+-- Dificultades del juego
+function game.level_1()
+    game.level = 1
+    game.updateRound()
+end
+
+function game.level_2()
+    game.level = 2
+    game.updateRound()
+end
+
+function game.level_3()
+    game.level = 3
+    game.updateRound()
 end
 
 return game

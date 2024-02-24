@@ -6,6 +6,7 @@ local states = {
     MENU = {
         MAIN = 'mainMenu',
         KEYBOARD = 'keyboardMenu',
+        LEVEL_SELECT = 'levelMenu'
     }
 }
 

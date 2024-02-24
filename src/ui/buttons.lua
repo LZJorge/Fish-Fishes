@@ -1,9 +1,4 @@
-local game = require 'src.game'
-local world = require 'src.world'
-local timer = require 'libs.hump.timer'
-
 local button = {}
-local buttons = {}
 
 function button.add(text, fn)
     return {
@@ -15,36 +10,7 @@ function button.add(text, fn)
     }
 end
 
-function button.load()
-    table.insert(buttons, button.add('Jugar',
-        function()
-            if game.round > 0 then
-                game.loading()
-
-                timer.after(2, function ()
-                    game.eraseEntities(world.entities)
-                    game.play()
-                    love.load()
-                end)
-            else
-                game.play()
-                love.load()
-            end
-        end))
-    
-    table.insert(buttons, button.add('Controles', 
-        function()
-            game.isOnKeyboardMenu()
-        end
-    ))
-
-    table.insert(buttons, button.add('Salir',
-        function()
-            love.event.quit(0)
-        end))
-end
-
-function button.draw(font)
+function button.draw(title, font, buttons)
     local ww = love.graphics.getWidth()
     local wh = love.graphics.getHeight()
 
@@ -54,6 +20,13 @@ function button.draw(font)
     local margin = 16
     local total_height = (button.height + margin) * #buttons
     local cursor_y = 0
+
+    -- 
+    love.graphics.print(
+        title,
+        (ww / 2) - (font:getWidth(title) / 2),
+        60
+    )
     
     for i, btn in ipairs(buttons) do
         btn.last = btn.now
@@ -110,16 +83,4 @@ function button.draw(font)
     end
 end
 
--- Menu
-local menu = {}
-
-function menu.init()
-    button.load()
-    game.isOnMenu()
-end
-
-function menu.draw(font)
-    button.draw(font)
-end
-
-return menu
+return button

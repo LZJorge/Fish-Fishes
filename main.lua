@@ -2,7 +2,9 @@ local timer = require 'libs.hump.timer'
 
 local states = require 'src.states'
 
-local menu = require 'src.menu'
+local mainMenu = require 'src.ui.menu.main'
+local levelsMenu = require 'src.ui.menu.levels'
+
 local game = require 'src.game'
 local keyboard = require 'src.keyboard'
 local world = require 'src.world'
@@ -14,12 +16,16 @@ local planes = {}
 world.entities = { player, birds, planes }
 
 -- Inicia el menu
-menu.init()
+mainMenu.init()
+levelsMenu.init()
 
 function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
 
-    if game.state ~= states.MENU.MAIN then
+    if game.state ~= states.MENU.MAIN 
+        and game.state ~= states.MENU.LEVEL_SELECT
+        and game.state ~= states.MENU.KEYBOARD
+    then
         -- Inicia características del juego
         world.entities = game.init()
 
@@ -33,7 +39,16 @@ function love.update(dt)
     -- Actualizar reloj de la librería Hump
     timer.update(dt)
 
-    if game.state ~= states.MENU.MAIN then  
+    -- Volver del menu de controles
+    if game.state == states.MENU.KEYBOARD or game.state == states.MENU.LEVEL_SELECT then
+        keyboard.onKeyboardOrLevelMenu()
+    end
+
+    if game.state ~= states.MENU.MAIN
+        and game.state ~= states.MENU.LEVEL_SELECT
+        and game.state ~= states.MENU.KEYBOARD
+        and game.state ~= states.LOADING
+    then  
         -- Acciones que pueden ocurrir mientras el juego está en pausa
         -- Controles de ayuda
         keyboard.helpers(game.state)
@@ -47,13 +62,13 @@ function love.update(dt)
             player[1]:update(world, game)
 
             -- Mover aves
-            for i = 1, #birds do
+            for i = 1, game.birdsNumber do
                 birds[i]:move()
             end
 
             -- Mover aviones
-            for i = 1, #planes do
-                planes[i]:move(dt)
+            for i = 1, game.planesNumber do
+                planes[i]:move(player[1], game)
             end
 
             -- Controles del jugador
@@ -65,10 +80,7 @@ function love.update(dt)
             keyboard.restart(game.state, world.entities)
         end
 
-        -- Volver del menu de controles
-        if game.state == states.MENU.KEYBOARD then
-            keyboard.onKeyboardMenu()
-        end
+        
     end
 end
 
@@ -76,21 +88,43 @@ function love.draw()
     -- Dibujar fuente
     local font = love.graphics.setNewFont('assets/font/font.ttf', 14)
 
-    -- Iniciar el menu
+    if game.state == states.LOADING then
+        game.drawLoading(font)
+    end
+
+    -- Dibujar el menu principal
     if game.state == states.MENU.MAIN then
-        menu.draw(font)
+        mainMenu.draw(font)
+    end
+
+    -- Dibujar el menu de niveles
+    if game.state == states.MENU.LEVEL_SELECT then
+        levelsMenu.draw(font)
+    end
+
+    -- Dibujar el menu de controles
+    if game.state == states.MENU.KEYBOARD then
+        keyboard.draw(font)
     end
     
-    if game.state ~= states.MENU.MAIN then
+    if game.state ~= states.MENU.MAIN
+        and game.state ~= states.MENU.LEVEL_SELECT 
+    then
         -- Dibujar entidades
         if game.state ~= states.LOADING 
             and game.state ~= states.MENU.MAIN 
             and game.state ~= states.MENU.KEYBOARD 
         then
-            for i = 1, #world.entities do
-                for j = 1, #world.entities[i] do
-                    world.entities[i][j]:draw()
-                end
+            player[1]:draw()
+
+            -- Mover aves
+            for i = 1, game.birdsNumber do
+                birds[i]:draw()
+            end
+
+            -- Mover aviones
+            for i = 1, game.planesNumber do
+                planes[i]:draw()
             end
         end
 
@@ -107,11 +141,7 @@ function love.draw()
 
         -- Dibujar Perdiste si haz chocado contra un enemigo
         if game.state == states.GAMEOVER then
-            game.drawGameOver()
-        end
-
-        if game.state == states.MENU.KEYBOARD then
-            keyboard.draw(font)
+            game.drawGameOver(font)
         end
     end
 end

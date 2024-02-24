@@ -45,7 +45,7 @@ function Plane:new(world)
 end
 
 -- Mover aviones en la misma dirección unicamente
-function Plane:move()
+function Plane:move(player, game)
     local vx = self.collider:getLinearVelocity()
 
     self.x = self.collider:getX()
@@ -59,6 +59,16 @@ function Plane:move()
 
     if self.collider:enter(Layers.WALL) then
         self:reset()
+    end
+
+    -- verificar la colisión con el jugador
+    if game.level == 3 and
+        self.x < player.x + player.size and
+        self.x + self.size > player.x and
+        self.y < player.y + player.size and
+        self.y + self.size > player.y 
+    then
+        game.finish()
     end
 end
 

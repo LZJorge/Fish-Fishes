@@ -19,7 +19,7 @@ function Player:new(world)
     self.sprite = love.graphics.newImage('assets/entities/player/player.png')
 
     -- Collider del jugador
-    self.collider = world:newRectangleCollider(self.x, self.y, 20, 20)
+    self.collider = world:newRectangleCollider(self.x, self.y, self.size, self.size)
     self.collider:setRestitution(0.2)
     self.collider:setCollisionClass(Layers.PLAYER)
     self.collider:setObject(self)
@@ -47,9 +47,13 @@ function Player:update(world, game)
         local bird = collision_data.collider:getObject()
         game.updateScore()
         bird:reset()
+
+        if game.level == 3 and self.size < 50 then
+            self.size = self.size + 2
+        end
     end
 
-    if self.collider:enter(Layers.PLANE) then
+    if self.collider:enter(Layers.PLANE) and game.level < 3 then
         game.finish()
     end
 end
@@ -61,8 +65,8 @@ function Player:draw()
         self.x, 
         self.y, 
         0, 
-        1.2, 
-        1.2, 
+        1.2 * (self.size / 20), 
+        1.2 * (self.size / 20), 
         self.sprite:getWidth() / 2,
         self.sprite:getHeight() / 2
     )
