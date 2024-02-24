@@ -1,6 +1,5 @@
 require 'src.layers'
 local timer = require 'libs.hump.timer'
-local anim8 = require 'libs.anim8.anim8'
 local Plane = {}
 local getRandomSide = require 'src.utils.getEntityRandomSide'
 

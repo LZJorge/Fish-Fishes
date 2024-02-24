@@ -1,4 +1,5 @@
 local game = require 'src.game'
+local states = require 'src.states'
 local keyboard = {}
 
 -- Acciones para mover al jugador
@@ -33,9 +34,9 @@ end
 function keyboard.helpers(state)
     function love.keypressed(key)
         if key == 'escape' then
-            if state.playing then
+            if state == states.PLAYING then
                 game.pause()
-            elseif state.paused then
+            elseif state == states.PAUSED then
                 game.play()
             end
         end
@@ -50,7 +51,7 @@ function keyboard.restart(state, entities)
         end
 
         if key == 'escape' then
-            if state.ended then
+            if state == states.GAMEOVER then
                 game.isOnMenu()
             end
         end

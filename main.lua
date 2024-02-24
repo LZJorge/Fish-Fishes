@@ -1,5 +1,7 @@
 local timer = require 'libs.hump.timer'
 
+local states = require 'src.states'
+
 local menu = require 'src.menu'
 local game = require 'src.game'
 local keyboard = require 'src.keyboard'
@@ -17,7 +19,7 @@ menu.init()
 function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
 
-    if not game.state.onMenu then
+    if game.state ~= states.MENU.MAIN then
         -- Inicia características del juego
         world.entities = game.init()
 
@@ -31,13 +33,13 @@ function love.update(dt)
     -- Actualizar reloj de la librería Hump
     timer.update(dt)
 
-    if not game.state.onMenu then  
+    if game.state ~= states.MENU.MAIN then  
         -- Acciones que pueden ocurrir mientras el juego está en pausa
         -- Controles de ayuda
         keyboard.helpers(game.state)
 
         -- Acciones que pueden ocurrir mientras el juego no está transcurriendo
-        if game.state.playing then
+        if game.state == states.PLAYING then
             -- Actualizar mundo de windfield
             world:update(dt)
 
@@ -59,12 +61,12 @@ function love.update(dt)
         end
 
         -- Acciones que pueden ocurrir mientras el juego está terminado
-        if game.state.ended then
+        if game.state == states.GAMEOVER then
             keyboard.restart(game.state, world.entities)
         end
 
         -- Volver del menu de controles
-        if game.state.onKeyboardMenu then
+        if game.state == states.MENU.KEYBOARD then
             keyboard.onKeyboardMenu()
         end
     end
@@ -75,13 +77,16 @@ function love.draw()
     local font = love.graphics.setNewFont('assets/font/font.ttf', 14)
 
     -- Iniciar el menu
-    if game.state.onMenu then
+    if game.state == states.MENU.MAIN then
         menu.draw(font)
     end
     
-    if not game.state.onMenu then
+    if game.state ~= states.MENU.MAIN then
         -- Dibujar entidades
-        if not game.state.loading then
+        if game.state ~= states.LOADING 
+            and game.state ~= states.MENU.MAIN 
+            and game.state ~= states.MENU.KEYBOARD 
+        then
             for i = 1, #world.entities do
                 for j = 1, #world.entities[i] do
                     world.entities[i][j]:draw()
@@ -90,22 +95,22 @@ function love.draw()
         end
 
         -- Dibujar puntuación
-        if game.state.playing or game.state.ended or game.state.paused then
+        if game.state == states.PLAYING or game.state == states.GAMEOVER or game.state == states.PAUSED then
             game.drawLine()
             game.drawScore()
         end
 
         -- Dibujar Pausa si el juego se encuentra pausado
-        if game.state.paused then
+        if game.state == states.PAUSED then
             game.drawPause()
         end
 
         -- Dibujar Perdiste si haz chocado contra un enemigo
-        if game.state.ended then
+        if game.state == states.GAMEOVER then
             game.drawGameOver()
         end
 
-        if game.state.onKeyboardMenu then
+        if game.state == states.MENU.KEYBOARD then
             keyboard.draw(font)
         end
     end

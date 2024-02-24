@@ -6,11 +6,14 @@ local Player = require 'src.entities.player'
 local Bird = require 'src.entities.bird'
 local Plane = require 'src.entities.plane'
 
+local states = require 'src.states'
+
 local player = {}
 local birds = {}
 local planes = {}
 
 local game = {}
+game.state = ''
 
 game.round = 0
 game.highScore = 0
@@ -103,26 +106,12 @@ end
 
 -- Pausar juego
 function game.pause()
-    game.state = {
-        playing = false,
-        paused = true,
-        ended = false,
-        loading = false,
-        onMenu = false,
-        onKeyboardMenu = false
-    }
+    game.state = states.PAUSED
 end
 
 -- Iniciar juego
 function game.play()
-    game.state = {
-        playing = true,
-        paused = false,
-        ended = false,
-        loading = false,
-        onMenu = false,
-        onKeyboardMenu = false
-    }
+    game.state = states.PLAYING
 end
 
 -- Terminar juego
@@ -133,48 +122,20 @@ function game.finish()
 
     game.round = game.round + 1
 
-    game.state = {
-        playing = false,
-        paused = false,
-        ended = true,
-        loading = false,
-        onMenu = false,
-        onKeyboardMenu = false
-    }
+    game.state = states.GAMEOVER
 end
 
 -- Poner juego en estado de carga (necesario para evitar bug de colliders al reiniciar)
 function game.loading()
-    game.state = {
-        playing = false,
-        paused = false,
-        ended = false,
-        loading = true,
-        onMenu = false,
-        onKeyboardMenu = false
-    }
+    game.state = states.LOADING
 end
 
 function game.isOnMenu()
-    game.state = {
-        playing = false,
-        paused = false,
-        ended = false,
-        loading = false,
-        onMenu = true,
-        onKeyboardMenu = false
-    }
+    game.state = states.MENU.MAIN
 end
 
 function game.isOnKeyboardMenu()
-    game.state = {
-        playing = false,
-        paused = false,
-        ended = false,
-        loading = false,
-        onMenu = false,
-        onKeyboardMenu = true
-    }
+    game.state = states.MENU.KEYBOARD
 end
 
 return game

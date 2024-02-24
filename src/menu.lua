@@ -40,7 +40,7 @@ function button.load()
 
     table.insert(buttons, button.add('Salir',
         function()
-            love.event.quit(1)
+            love.event.quit(0)
         end))
 end
 
