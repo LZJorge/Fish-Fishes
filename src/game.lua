@@ -5,6 +5,7 @@ local world = require 'src.world'
 local Player = require 'src.entities.player'
 local Bird = require 'src.entities.bird'
 local Plane = require 'src.entities.plane'
+local Crab = require 'src.entities.crab'
 
 local states = require 'src.states'
 
@@ -13,22 +14,23 @@ local centerX = require 'src.utils.centerText'
 local player = {}
 local birds = {}
 local planes = {}
+local crabs = {}
 
 local game = {}
 
 game.level = 1
-
 game.round = 0
 
 game.highScore = {}
-
 game.highScore[1] = 0
 game.highScore[2] = 0
 game.highScore[3] = 0
 
 game.birdPoints = 5
+
 game.birdsNumber = 4
 game.planesNumber = 2
+game.crabsNumber = 0
 
 -- Iniciar características de la partida
 function game.init()
@@ -56,7 +58,12 @@ function game.init()
         planes[i] = Plane:new(world)
     end
 
-    entities = { player, birds, planes }
+    -- Inicia una cantidad x de cangrejos
+    for i = 1, game.crabsNumber do
+        crabs[i] = Crab:new(world)
+    end
+
+    entities = { player, birds, planes, crabs }
 
     game.play()
 
@@ -68,14 +75,17 @@ function game.updateLevelParams()
         game.birdsNumber = 5
         game.birdPoints = 5
         game.planesNumber = 2
+        game.crabsNumber = 0
     elseif game.level == 2 then
         game.birdsNumber = 7
         game.birdPoints = 10
         game.planesNumber = 4
+        game.crabsNumber = 2
     elseif game.level == 3 then
         game.birdsNumber = 8
         game.birdPoints = 15
         game.planesNumber = 4
+        game.crabsNumber = 3
     end
 end
 
@@ -89,6 +99,10 @@ function game.eraseEntities()
 
     for i = 1, game.planesNumber do
         planes[i].collider:destroy()
+    end
+
+    for i = 1, game.crabsNumber do
+        crabs[i].collider:destroy()
     end
 end
 
@@ -119,9 +133,9 @@ function game.drawScore()
 end
 
 -- Dibujar pausa
-function game.drawPause()
+function game.drawPause(font)
     love.graphics.setColor(255, 255, 255)
-    love.graphics.print('Juego pausado', love.graphics.getWidth() / 2 - 50, love.graphics.getHeight() / 2 - 50)
+    love.graphics.print('Juego pausado', centerX('Juego pausado', font), love.graphics.getHeight() / 2 - 50)
 end
 
 -- Dibujar línea de separación entre agua y aire

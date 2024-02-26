@@ -1,9 +1,9 @@
 Layers = {
     -- Entidades
     PLAYER = 'Player',
-    ENEMY = 'Enemy',
     BIRD = 'Bird',
     PLANE = 'Plane',
+    CRAB = 'Crab',
 
     -- Mapa
     WATER = 'Water',
@@ -11,5 +11,6 @@ Layers = {
 
     -- Muros
     WALL = 'Wall',
-    TOPWALL = 'Top'
+    TOPWALL = 'Top',
+    GROUND = 'Ground'
 }

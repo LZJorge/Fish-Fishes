@@ -33,7 +33,7 @@ function Bird:new(world)
 end
 
 -- Mover aves aleatoriamente
-function Bird:move()
+function Bird:move(player, game)
     self.collider:applyLinearImpulse(math.random(-15, 15), math.random(-5, 5))
 
     self.x = self.collider:getX()
@@ -41,6 +41,20 @@ function Bird:move()
 
     if self.collider:enter(Layers.WALL) then
         self.direction = -self.direction
+    end
+
+    if game.level == 3 and
+        self.x < player.x + player.size and
+        self.x + self.size > player.x and
+        self.y < player.y + player.size and
+        self.y + self.size > player.y 
+    then
+        game.updateScore()
+        self:reset()
+
+        if player.size < 40 then
+            self.size = self.size + 2
+        end
     end
 end
 
@@ -68,8 +82,8 @@ function Bird:draw()
         self.x, 
         self.y, 
         0, 
-        1.2, 
-        1.2, 
+        1.7, 
+        1.7, 
         self.sprite:getWidth() / 2,
         self.sprite:getHeight() / 2
     )

@@ -27,10 +27,10 @@ function Player:new(world)
     return self
 end
 
-function Player:update(world, game)
+function Player:update(game)
     if self.collider:exit(Layers.WATER) then
         self.isInWater = false
-        world:setGravity(0, 1024)
+        self.collider:setGravityScale(1)
     end
 
     self.x = self.collider:getX()
@@ -38,7 +38,7 @@ function Player:update(world, game)
 
     if self.collider:enter(Layers.WATER) then
         self.isInWater = true
-        world:setGravity(0, 32)
+        self.collider:setGravityScale(0.03)
         self.collider:applyLinearImpulse(0, -100)
     end
 
@@ -48,12 +48,16 @@ function Player:update(world, game)
         game.updateScore()
         bird:reset()
 
-        if game.level == 3 and self.size < 50 then
+        if game.level == 3 and self.size < 40 then
             self.size = self.size + 2
         end
     end
 
     if self.collider:enter(Layers.PLANE) and game.level < 3 then
+        game.finish()
+    end
+
+    if self.collider:enter(Layers.CRAB) and game.level < 3 then
         game.finish()
     end
 end

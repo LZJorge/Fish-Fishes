@@ -12,8 +12,9 @@ local world = require 'src.world'
 local player = {}
 local birds = {}
 local planes = {}
+local crabs = {}
 
-world.entities = { player, birds, planes }
+world.entities = { player, birds, planes, crabs }
 
 -- Inicia el menu
 mainMenu.init()
@@ -32,6 +33,7 @@ function love.load()
         player = world.entities[1]
         birds = world.entities[2]
         planes = world.entities[3]
+        crabs = world.entities[4]
     end
 end
 
@@ -55,15 +57,12 @@ function love.update(dt)
 
         -- Acciones que pueden ocurrir mientras el juego no está transcurriendo
         if game.state == states.PLAYING then
-            -- Actualizar mundo de windfield
-            world:update(dt)
-
             -- Calcular colisiones del jugador con las diferentes entidades
-            player[1]:update(world, game)
+            player[1]:update(game)
 
             -- Mover aves
             for i = 1, game.birdsNumber do
-                birds[i]:move()
+                birds[i]:move(player[1], game)
             end
 
             -- Mover aviones
@@ -71,8 +70,23 @@ function love.update(dt)
                 planes[i]:move(player[1], game)
             end
 
+            -- Mover cangrejos
+            for i = 1, game.crabsNumber do
+                crabs[i]:move(player[1], game)
+
+                -- Saltar cangrejos
+                if math.random(1, 100) == 1 
+                    and crabs[i].y >= love.graphics.getHeight() - crabs[i].size - 1
+                then
+                    crabs[i]:jump()
+                end
+            end
+
             -- Controles del jugador
             keyboard.movement(player[1])
+
+            -- Actualizar mundo de windfield
+            world:update(dt)
         end
 
         -- Acciones que pueden ocurrir mientras el juego está terminado
@@ -117,14 +131,19 @@ function love.draw()
         then
             player[1]:draw()
 
-            -- Mover aves
+            -- Dibujar aves
             for i = 1, game.birdsNumber do
                 birds[i]:draw()
             end
 
-            -- Mover aviones
+            -- Dibujar aviones
             for i = 1, game.planesNumber do
                 planes[i]:draw()
+            end
+
+            -- Dibujar cangrejos
+            for i = 1, game.crabsNumber do
+                crabs[i]:draw()
             end
         end
 
@@ -136,7 +155,7 @@ function love.draw()
 
         -- Dibujar Pausa si el juego se encuentra pausado
         if game.state == states.PAUSED then
-            game.drawPause()
+            game.drawPause(font)
         end
 
         -- Dibujar Perdiste si haz chocado contra un enemigo
